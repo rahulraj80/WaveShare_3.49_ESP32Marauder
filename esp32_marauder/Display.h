@@ -16,10 +16,19 @@
 #include "BootSplash.h"
 #include "MemoryGuard.h"
 
-#ifdef MARAUDER_POOM
-  #include "PoomDisplay.h"
+#ifdef MARAUDER_WS349
+  #include <Arduino_GFX_Library.h>
+  #include <Wire.h>
+  #include <freertos/FreeRTOS.h>
+  #include <freertos/semphr.h>
+  #include <freertos/task.h>
+  #include <esp_heap_caps.h>
 #else
-  #include <TFT_eSPI.h>
+  #ifdef MARAUDER_POOM
+    #include "PoomDisplay.h"
+  #else
+    #include <TFT_eSPI.h>
+  #endif
 #endif
 
 // Reject board/display configuration mismatches at compile time. A mismatched
@@ -101,8 +110,25 @@ class Display
 
   public:
     Display();
-    TFT_eSPI tft = TFT_eSPI();
-    TFT_eSPI_Button key[BUTTON_ARRAY_LEN + 4];
+    
+    #ifdef MARAUDER_WS349
+      // Arduino_GFX / QSPI members for WS349
+      Arduino_ESP32QSPI *bus_;
+      Arduino_AXS15231B *panel_;
+      Arduino_Canvas *canvas_;
+      uint16_t *frame_;
+      SemaphoreHandle_t mutex_;
+      TaskHandle_t flush_task_;
+      bool dirty_;
+      bool started_;
+      uint32_t simX_, simY_, simUntil_;
+    #else
+      TFT_eSPI tft = TFT_eSPI();
+    #endif
+    
+    #ifndef MARAUDER_WS349
+      TFT_eSPI_Button key[BUTTON_ARRAY_LEN + 4];
+    #endif
     const String PROGMEM version_number = MARAUDER_VERSION;
 
     #ifdef HAS_CYD_TOUCH
@@ -154,8 +180,8 @@ class Display
     void tftDrawXScaleButtons(byte x_scale);
     void tftDrawYScaleButtons(byte y_scale);
     void tftDrawChannelScaleButtons(int set_channel, bool lnd_an = true);
-    void tftDrawExitScaleButtons(bool lnd_an = true);
-    void tftDrawChanHopButton(bool lnd_an = true, bool en = false);
+    void tftDrawExitScaleButtons(byte lnd_an = true);
+    void tftDrawChanHopButton(byte lnd_an = true, bool en = false);
     void buildBanner(String msg, int xpos);
     void clearScreen();
     bool queueLine(const String& line);
@@ -169,6 +195,17 @@ class Display
     void twoPartDisplay(String center_text);
     void updateBanner(String msg);
     void setCalData(bool landscape = false);
+    
+    #ifdef MARAUDER_WS349
+      // WS349-specific methods
+      uint32_t dutyForBrightness(uint8_t brightness);
+      void ws349SetBacklightRail(bool on);
+      void earlyInitVariant();
+      bool injectTouch(int16_t x, int16_t y, uint32_t durationMs);
+      bool getTouch(int16_t *x, int16_t *y);
+      bool copyFrame(uint16_t *dst);
+    #endif
 };
+
 #endif
 #endif

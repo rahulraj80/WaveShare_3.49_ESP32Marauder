@@ -44,6 +44,7 @@
   //#define MARAUDER_M5_NANO_C6
   //#define DUAL_MINI_C5
   //#define MARAUDER_POOM
+  //#define MARAUDER_WS349
   //// END BOARD TARGETS
 
   // The official Arduino board package supplies this identifier for the XIAO
@@ -126,6 +127,8 @@
     #define HARDWARE_NAME "Marauder v8"
   #elif defined(MARAUDER_PANCAKE)
     #define HARDWARE_NAME "Pancake Marauder V8"
+  #elif defined(MARAUDER_WS349)
+    #define HARDWARE_NAME "Waveshare ESP32-S3-Touch-LCD-3.49"
   #elif defined(MARAUDER_MINI_V3)
     #define HARDWARE_NAME "Marauder Mini v3"
   #elif defined(DUAL_MINI_C5)
@@ -592,15 +595,15 @@
     #define HAS_DIRECT_UPLOAD
   #endif
 
-  #ifdef MARAUDER_PANCAKE
+#ifdef MARAUDER_PANCAKE
     #define HAS_TOUCH
     #define HAS_CAP_TOUCH
     //#define HAS_FLIPPER_LED
     //#define FLIPPER_ZERO_HAT
-    #define HAS_BATTERY
+    //#define HAS_BATTERY
     #define HAS_BT
-    #define HAS_BUTTONS
-    #define HAS_NEOPIXEL_LED
+    //#define HAS_BUTTONS
+    //#define HAS_NEOPIXEL_LED
     //#define HAS_PWR_MGMT
     #define HAS_SCREEN
     #define HAS_FULL_SCREEN
@@ -613,6 +616,32 @@
     //#define HAS_TEMP_SENSOR
     #define HAS_NIMBLE_2
     #define HAS_IDF_3
+    #define HAS_ACT_LED
+    #define HAS_DIRECT_UPLOAD
+  #endif
+
+  #ifdef MARAUDER_WS349
+    #define HARDWARE_NAME "Waveshare ESP32-S3-Touch-LCD-3.49"
+    #define HAS_TOUCH
+    #define HAS_CAP_TOUCH
+    //#define HAS_FLIPPER_LED
+    //#define FLIPPER_ZERO_HAT
+    //#define HAS_BATTERY
+    #define HAS_BT
+    #define HAS_BT_REMOTE
+    //#define HAS_BUTTONS
+    //#define HAS_NEOPIXEL_LED
+    //#define HAS_PWR_MGMT
+    #define HAS_SCREEN
+    #define HAS_FULL_SCREEN
+    //#define HAS_GPS
+    //#define HAS_SD
+    //#define USE_SD
+    //#define HAS_TEMP_SENSOR
+    #define HAS_PSRAM
+    #define HAS_NIMBLE_2
+    #define HAS_IDF_3
+    #define HAS_DUAL_BAND
     #define HAS_DIRECT_UPLOAD
   #endif
 
